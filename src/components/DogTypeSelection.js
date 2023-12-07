@@ -1,7 +1,11 @@
-export const DogTypeSelection = ({ data, selectedDogTypes, handleQuantityChange }) => {
+import { connect } from "react-redux";
+import { updateDogTypes } from "../redux/actions";
+import { DogWalker } from "../dogType";
+
+const DogTypeSelection = ({ selectedDogTypes, handleQuantityChange }) => {
     return (
         <div className="quantity-manager-group">
-            {data.map((dogType, index) => (
+            {DogWalker[1].data.map((dogType, index) => (
                 <div key={dogType.title} className="quantity-item">
                     <div className="item-info">
                         {dogType.title} - ${dogType.price}
@@ -16,3 +20,18 @@ export const DogTypeSelection = ({ data, selectedDogTypes, handleQuantityChange 
         </div>
     )
 }
+
+const mapStateToPropsDogType = (state) => ({
+    selectedDogTypes: state.selectedDogTypes,
+});
+
+const mapDispatchToPropsDogType = (dispatch) => ({
+    handleQuantityChange: (dogTypeIndex, actionType) => {
+        dispatch(updateDogTypes({ dogTypeIndex, actionType }));
+    },
+});
+
+export const DogTypeSelections = connect(
+    mapStateToPropsDogType,
+    mapDispatchToPropsDogType
+)(DogTypeSelection);

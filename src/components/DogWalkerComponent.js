@@ -1,44 +1,15 @@
-import React, { useState } from "react";
-import { DogTypeSelection } from "./DogTypeSelection";
-import { HourSelection } from "./HourSelection";
-import { DogWalker } from "../dogType";
+import React from "react";
+import { DogTypeSelections } from "./DogTypeSelection";
+import { HourSelections } from "./HourSelection";
+import { connect } from "react-redux";
 
-const DogWalkerComponent = () => {
-    const [selectedHour, setSelectedHour] = useState(null);
-    const [selectedDogTypes, setSelectedDogTypes] = useState({});
-
-    const handleHourSelection = (hour) => {
-        setSelectedHour(hour);
-    };
-
-    const handleQuantityChange = (dogTypeIndex, action) => {
-        setSelectedDogTypes((prevDogTypes) => {
-            const updatedDogTypes = { ...prevDogTypes };
-            const dogType = DogWalker[1].data[dogTypeIndex];
-            updatedDogTypes[dogType.title] = updatedDogTypes[dogType.title] || { quantity: 0, price: dogType.price };
-            if (action === "increment") {
-                updatedDogTypes[dogType.title].quantity += 1;
-            } else if (action === "decrement" && updatedDogTypes[dogType.title].quantity > 0) {
-                updatedDogTypes[dogType.title].quantity -=1;
-            }
-            return updatedDogTypes;
-        });
-    };
-
-    const calculateTotalPrice = () => {
-        let totalPrice = 0;
-        for (const dogType in selectedDogTypes) {
-            totalPrice += (selectedDogTypes[dogType].quantity * selectedDogTypes[dogType].price) + selectedHour.price;
-        }
-        return totalPrice;
-    };
-    
+const DogWalkerComponent = ({ selectedHour, selectedDogTypes, calculateTotalPrice }) => {
     return (
         <div className="dog-walker-container">
             <h2>Dog Walker</h2>
-            <HourSelection data={DogWalker[0].data} selectedHour={selectedHour} handleHourSelection={handleHourSelection} />
+            <HourSelections />
             <h2>Select Dog type</h2>
-            <DogTypeSelection data={DogWalker[1].data} selectedDogTypes={selectedDogTypes} handleQuantityChange={handleQuantityChange} />
+            <DogTypeSelections />
             {selectedHour && (
                 <div className="cart">
                     <h3>Cart</h3>
@@ -48,11 +19,26 @@ const DogWalkerComponent = () => {
                             <p>{dogType} - Quantity: {data.quantity}</p>
                         </div>
                     ))}
-                    <p>Total Price: ${calculateTotalPrice() || selectedHour.price}</p>
+                    <p>Total Price: ${calculateTotalPrice(selectedDogTypes, selectedHour) || selectedHour.price}</p>
                 </div>
             )}
         </div>
     );
 };
 
-export default DogWalkerComponent;
+const mapStateToProps = (state) => ({
+    selectedHour: state.selectedHour,
+    selectedDogTypes: state.selectedDogTypes,
+});
+
+const mapDispatchToProps = () => ({
+    calculateTotalPrice: (dogTypes, hour) => {
+        let totalPrice = 0;
+        for (const dogType in dogTypes) {
+            totalPrice += (dogTypes[dogType].quantity * dogTypes[dogType].price) + hour.price;
+        }
+        return totalPrice;
+    }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DogWalkerComponent);

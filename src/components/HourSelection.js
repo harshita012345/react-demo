@@ -1,7 +1,11 @@
-export const HourSelection = ({ data, selectedHour, handleHourSelection }) => {
+import { connect } from "react-redux";
+import { DogWalker } from "../dogType";
+import { selectHour } from "../redux/actions";
+
+const HourSelection = ({ selectedHour, handleHourSelection }) => {
     return (
         <div className="radio-button-group">
-            {data.map((hour) => (
+            {DogWalker[0].data.map((hour) => (
                 <div key={hour._id} className="radio-item">
                     <label>{hour.hour} hr</label>
                     <div>
@@ -19,3 +23,17 @@ export const HourSelection = ({ data, selectedHour, handleHourSelection }) => {
         </div>
     )
 }
+
+
+const mapStateToPropsHour = (state) => ({
+    selectedHour: state.selectedHour,
+  });
+  
+  const mapDispatchToPropsHour = (dispatch) => ({
+    handleHourSelection: (hour) => dispatch(selectHour(hour)),
+  });
+  
+  export const HourSelections = connect(
+    mapStateToPropsHour,
+    mapDispatchToPropsHour
+  )(HourSelection);

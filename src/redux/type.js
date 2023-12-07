@@ -1,0 +1,2 @@
+export const SELECT_HOUR = "SELECT_HOUR";
+export const UPDATE_DOG_TYPES = "UPDATE_DOG_TYPES";
